@@ -7,8 +7,8 @@
 
       <!-- Modal content -->
       <div class="modal-content">
-        <span class="circle">
-          <span class="close" v-on:click="closeModal">&times;</span>
+        <span class="circle" v-on:click="closeModal">
+          <i class="fa fa-times" aria-hidden="true"></i>
         </span>
         <div>
           <h3>Why do you want to delete your feed?</h3>
@@ -33,8 +33,8 @@
             <label for="d">Other</label>
           </div>
 
-          <div>
-            <textarea name="" id="" cols="30" rows="10" v-if="is_Show" v-model="otherMessage"></textarea>
+          <div class="flex-fill">
+            <textarea name="" rows="6" v-if="is_Show" v-model="otherMessage"></textarea>
           </div>
 
 
@@ -43,7 +43,7 @@
               <button v-on:click="deleteBtn" >Delete</button>
             </div>
             <p>
-              <a href=""  v-on:click.prevent="closeModal" style="font-size: 18px">Cancel</a>
+              <a href=""  v-on:click.prevent="closeModal" style="font-size: 16px">Cancel</a>
             </p>
           </div>
 
@@ -168,27 +168,28 @@ export default {
 </script>
 
 <style lang="scss">
-
-
 #app {
   font-family: 'Montserrat', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   margin-top: 20px;
+  box-sizing: border-box;
+  min-height: 100vh;
+
+  * {
+    box-sizing: border-box;
+  }
 }
 
-textarea{
-  width: 670px;
-  height: 70px;
-  border-radius: 6px;
-  border: 2px solid #e9e8e8;
-  background-color: #ffffff;
+button,
+label {
+  cursor: pointer;
 }
 
 .item label{
   color: #231f20;
-  font-family: Montserrat;
+  font-family: 'Montserrat', sans-serif;
   font-size: 15px;
   font-weight: 400;
 }
@@ -196,10 +197,12 @@ textarea{
 
 /* Modal Content */
   .modal-content h3{
+    flex: 0 0 100%;
     color: #231f20;
-    font-family: Montserrat;
+    font-family: 'Montserrat', sans-serif;
     font-size: 20px;
     font-weight: 700;
+    margin-top: 0;
     margin-bottom: 35px;
     @media screen and (max-width: 500px) {
       margin-bottom: 25px;
@@ -221,43 +224,60 @@ textarea{
     }
   }
 .modal-content {
+  max-width: 880px;
   margin: auto;
-  padding: 20px;
+  position: relative;
+  padding: 120px 100px;
   background-image: url("./../assets/Combined_Shape_new.png");
   background-repeat: no-repeat;
-  width: 883px;
-  height: 560px;
   box-shadow: 0 5px 25px rgba(34, 60, 47, 0.15);
   border-radius: 6px;
   background-color: #ffffff;
-  @media screen and (max-width: 991px) {
-    width: 82%;
+
+  @media (max-width: 880px) {
+    height: 100%;
+    margin: 0 30px;
+    padding: 110px 80px;
   }
-  @media screen and (max-width: 500px) {
+
+  @media (max-width: 600px) {
+    padding: 60px 40px;
+    margin: 0 15px;
     height: 100%;
   }
 }
-  .modal-content > div{
-    width: 75%;
-    margin: 0 auto;
-    padding-top: 25px;
-    @media screen and (max-width: 991px) {
-      width: 90%;
-    }
-
+  .modal-content > div {
+   display: flex;
+    flex-wrap: wrap;
   }
+
+  .flex-fill {
+    flex: 0 0 100%;
+    width: 100%;
+  }
+
+  textarea {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 6px;
+    border: 2px solid #e9e8e8;
+    background-color: #ffffff;
+  }
+
   .item{
-    display: inline-block;
-    width: 45%;
+    flex: 0 0 50%;
     margin-bottom: 35px;
-    @media screen and (max-width: 991px) {
-      width: 50%;
-    }
+
     @media screen and (max-width: 767px){
         width: 100%;
     }
-    @media screen and (max-width: 400px){
-      margin-bottom: 10px;
+    @media screen and (max-width: 600px){
+      margin-bottom: 15px;
+      flex: 0 0 100%;
+
+      &:last-child {
+        margin-bottom: 40px;
+      }
     }
 
   }
@@ -306,19 +326,19 @@ textarea{
 
 /*Buttons*/
 .buttonBlock{
+  flex: 0 0 100%;
   margin-top: 30px;
   text-align: center;
 }
 .buttonBlock button{
-  width: 155px;
   height: 90px;
-  border-radius: 45px;
+  padding: 0 41px;
+  border-radius: 10rem;
   color: white;
   border: none;
   outline: none;
   font-size: 30px;
   font-weight: 700;
-  line-height: 40px;
   background-color: #FC000E;
   font-family: 'Montserrat', sans-serif;
   cursor: pointer;
@@ -335,18 +355,29 @@ textarea{
   color: grey;
 }
 
-.close {
+.circle {
   color: #aaaaaa;
-  float: right;
-  font-size: 28px;
+  font-size: 18px;
   font-weight: bold;
   border: 2px solid #aaaaaa;
   border-radius: 50%;
   width: 30px;
   height: 30px;
-  text-align: center;
-  line-height: 30px;
   transition: all .7s ease-in-out;
+  display: inline-flex;
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    margin-right: -1px;
+
+    @media screen and (max-width: 992px){
+      margin-right: 0;
+    }
+  }
 }
 
 .close:hover,
