@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './components/App.vue';
 import VueToastify from "vue-toastify";
 
+
 Vue.use(VueToastify, {
     position:"top-right",
     errorDuration: 3000,
