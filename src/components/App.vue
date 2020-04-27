@@ -2,69 +2,32 @@
   <div id="app" >
     <button id="myBtn" v-on:click="openModal" :disabled="!is_enable" style="padding: 5px 10px;">Delete this feed</button>
 
-    <!-- The Modal -->
-    <div id="myModal" class="modal" ref="newModal">
-
-      <!-- Modal content -->
-      <div class="modal-content">
-        <span class="circle" v-on:click="closeModal">
-          <i class="fa fa-times" aria-hidden="true"></i>
-        </span>
-        <div>
-          <h3>Why do you want to delete your feed?</h3>
-
-          <div class="item">
-            <input id="a" type="radio" value="1" v-model="checkBoxValue"  >
-            <label for="a">Found a better alternative</label>
-          </div>
-
-          <div class="item">
-            <input id="b" type="radio" value="2" v-model="checkBoxValue"  >
-            <label for="b">Pricing too high</label>
-          </div>
-
-          <div class="item">
-            <input id="c" type="radio" value="3" v-model="checkBoxValue"  >
-            <label for="c">Not clear how it works</label>
-          </div>
-
-          <div class="item">
-            <input id='d' type="radio" value="4" v-model="checkBoxValue"  >
-            <label for="d">Other</label>
-          </div>
-
-          <div class="flex-fill">
-            <textarea name="" rows="6" v-if="checkBoxValue == 1 || checkBoxValue == 4" v-model="otherMessage"></textarea>
-          </div>
+    <modal-component v-on:closeModal="closeModal"
+                     v-on:deleteBtn="deleteBtn"
+                     :showModal="is_show"
+                     :checkBoxValue.sync="checkBoxValue"
+                     :otherMessage.sync="otherMessage"
+    ></modal-component>
 
 
-          <div class="buttonBlock">
-            <div>
-              <button v-on:click="deleteBtn" >Delete</button>
-            </div>
-            <p>
-              <a href=""  v-on:click.prevent="closeModal" style="font-size: 16px">Cancel</a>
-            </p>
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
 
   </div>
 </template>
 
 <script>
   import axios from 'axios';
+  import ModalComponent from "./Modal";
 
   export default {
     name: 'app',
+    components:{
+      ModalComponent
+    },
 
     data () {
       return {
         feed_id:'',
+        is_show: false,
         is_enable: false,
         otherMessage:'',
         checkBoxValue:"",
@@ -73,7 +36,6 @@
     },
 
     mounted() {
-      document.addEventListener('click', this.onClick);
       axios.get('http://localhost:8080/api/feed/get-base-info',{ 'headers': { 'token': this.token } }).then((res)=>{
         if (res.data.code === 200){
           this.is_enable = true;
@@ -85,16 +47,8 @@
       })
     },
 
-    beforeDestroy() {
-       document.removeEventListener('click', this.onClick);
-    },
+
     methods:{
-      onClick(event){
-        var modal = document.getElementById("myModal");
-        if(event.target==modal) {
-          modal.style.display = "none"
-        }
-      },
       deleteBtn(){
         if (!this.checkBoxValue){
           this.$vToastify.info("Please select one of checkbox");
@@ -105,7 +59,6 @@
           option: this.checkBoxValue,
           message: this.checkBoxValue == 4 || this.checkBoxValue == 1 ? this.otherMessage : null
         };
-        let token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODYyMTk5MzEsInN1YiI6IjI2NTM3OTkiLCJyb2xlIjoidXNlciIsInVzZXJuYW1lIjoiZHVob3ZnYW1lcytwdWIzMmRlMGVjIn0.b164gMpUr6RFY6T-e7zqqPYzLk2ws3kx-nEHkQSDaac';
         axios.get('http://localhost:8080/api/feed/delete-feed',
           {
             'headers': { 'token': this.token },
@@ -121,239 +74,31 @@
 
       },
       openModal(){
-        this.checkBoxValue = "";
-        this.otherMessage = '';
-        var modal = document.getElementById("myModal");
-        modal.style.display = "block";
+        this.is_show = true
       },
       closeModal(){
-        var modal = document.getElementById("myModal");
-        modal.style.display = "none";
+         this.otherMessage='';
+        this.checkBoxValue="";
+        this.is_show = false
       }
     },
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   #app {
     font-family: 'Montserrat', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: #2c3e50;
-    margin-top: 20px;
     box-sizing: border-box;
     min-height: 100vh;
-
-    * {
-      box-sizing: border-box;
-    }
-  }
-
-  button,
-  label {
-    cursor: pointer;
-  }
-
-  .item label{
-    color: #231f20;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 15px;
-    font-weight: 400;
-  }
-
-
-  /* Modal Content */
-  .modal-content h3{
-    flex: 0 0 100%;
-    color: #231f20;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    margin-top: 0;
-    margin-bottom: 35px;
-    @media screen and (max-width: 500px) {
-      margin-bottom: 25px;
-    }
-  }
-  .modal {
-    display: none;
-    /*position: absolute;*/
     position: relative;
-    z-index: 1;
-    padding-top: 100px;
-    margin-top: -50px;
-    padding-bottom: 50px;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    /*overflow-y: scroll;*/
-    @media screen and (max-width: 500px) {
-      padding-top: 40px;
-    }
   }
-  .modal-content {
-    max-width: 880px;
-    margin: auto;
-    position: relative;
-    padding: 120px 100px;
-    background-image: url("./../assets/Combined_Shape_new.png");
-    background-repeat: no-repeat;
-    box-shadow: 0 5px 25px rgba(34, 60, 47, 0.15);
-    border-radius: 6px;
-    background-color: #ffffff;
-
-    @media (max-width: 880px) {
-      height: 100%;
-      margin: 0 30px;
-      padding: 110px 80px;
-    }
-
-    @media (max-width: 600px) {
-      padding: 60px 40px;
-      margin: 0 15px;
-      height: 100%;
-    }
-  }
-  .modal-content > div {
-    display: flex;
-    flex-wrap: wrap;
-  }
-
-  .flex-fill {
-    flex: 0 0 100%;
-    width: 100%;
-  }
-
-  textarea {
-    width: 100%;
-    max-width: 100%;
-    border-radius: 6px;
-    border: 2px solid #e9e8e8;
-    background-color: #ffffff;
-  }
-
-  .item{
-    flex: 0 0 50%;
-    margin-bottom: 35px;
-
-    @media screen and (max-width: 767px){
-      width: 100%;
-    }
-    @media screen and (max-width: 600px){
-      margin-bottom: 15px;
-      flex: 0 0 100%;
-
-      &:last-child {
-        margin-bottom: 40px;
-      }
-    }
-
-  }
-
-  /*Input Button*/
-  label {
-    cursor: pointer;
-    display: inline-block;
-    position: relative;
-    padding-left: 50px;
-    margin-top: 20px;
-    margin-right: 10px;
-  }
-
-  label::before {
-    content: "";
-    width: 15px;
-    height: 15px;
+  #myBtn{
     position: absolute;
-    left: 0;
-  }
-
-  input[type=radio] {
-    display: none;
-  }
-
-  label {
-    &:before{
-      background: url('./../assets/Combined_Shape.png') left center no-repeat;
-      margin-top: -8px;
-      width: 35px;
-      height: 35px;
-      border-radius: 6px;
-      @media screen and (max-width: 400px) {
-        margin-top: -5px;
-      }
-    }
-  }
-
-  input[type=radio]:checked + label:before {
-    background: url('./../assets/Combined_Shape_green.png') left center no-repeat;
-  }
-  input[type=radio]:checked + label:after {
-    background: url('./../assets/check.png') left center no-repeat;
-  }
-
-  /*Buttons*/
-  .buttonBlock{
-    flex: 0 0 100%;
-    margin-top: 30px;
-    text-align: center;
-  }
-  .buttonBlock button{
-    height: 90px;
-    padding: 0 41px;
-    border-radius: 10rem;
-    color: white;
-    border: none;
-    outline: none;
-    font-size: 30px;
-    font-weight: 700;
-    background-color: #FC000E;
-    font-family: 'Montserrat', sans-serif;
-    cursor: pointer;
-    transition: all 0.5s ease-in-out;
-  }
-
-  .buttonBlock button{
-    &:hover{
-      background-color: #ad2c2c;
-    }
-  }
-  .buttonBlock a{
-    text-decoration: none;
-    color: grey;
-  }
-
-  .circle {
-    color: #aaaaaa;
-    font-size: 18px;
-    font-weight: bold;
-    border: 2px solid #aaaaaa;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    transition: all .7s ease-in-out;
-    display: inline-flex;
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    align-items: center;
-    justify-content: center;
-
-    i {
-      margin-right: -1px;
-
-      @media screen and (max-width: 992px){
-        margin-right: 0;
-      }
-    }
-  }
-
-  .close:hover,
-  .close:focus {
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
+    left: 10px;
+    top: 10px;
   }
 </style>
 
